@@ -1,10 +1,10 @@
 /**
- * @name Inference of Annotations for Resource Leak Checker (RLC) 
+ * @name Inference of Annotations for Resource Leak Checker (RLC) for all types
  * @description Inferring annotations for Resource Leak Analysis.
  * @kind problem
  * @precision high
  * @problem.severity recommendation
- * @id c/infer-resource-leak-attributes
+ * @id c/infer-resource-leak-attributes-for-all-types
  * @tags correctness
  */
 
@@ -45,108 +45,25 @@ predicate isInMockOrTestFile(Element c) // For disabling the inference of test c
 predicate noEmptyMustCallAnnotation(Class c)
 {
      not (c.fromLibrary() and exists(string str | c.hasName(str) and readAnnotation("Library","0","Class",str,"MustCall")))
+     and
+     not exists(string str | c.hasName(str) and readAnnotation(getRelativePathForClass(c), c.getLocation().getStartLine().toString(), "Class", str, "MustCall"))
 }
  
- predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
-{
-    // Annotations on Library Code
-
-    (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamWriter" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryWriter" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_Socket" and programElementType = "Method" and programElementName = "NetworkStream" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "2_SqlConnection" and programElementType = "Method" and programElementName = "SqlCommand" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0_SqlCommand" and programElementType = "Method" and programElementName = "ExecuteReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Task" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringReader" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "MemoryStream" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Method" and programElementName = "CancellationTokenSource" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringTokenizer" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Process" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringWriter" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "MemoryCache" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PollingCounter" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "IncrementingPollingCounter" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "FeedIterator" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "1_String" and programElementType = "Method" and programElementName = "Open" and annotation = "Owning")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SubscriptionToken" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "CountdownEvent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0_Socket" and programElementType = "Method" and programElementName = "Accept" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "1_FileStream" and programElementType = "Method" and programElementName = "CreateFromFile" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_MemoryMappedFile" and programElementType = "Method" and programElementName = "CreateViewByteBuffer" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ServiceProvider" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Method" and programElementName = "EnsureSuccessStatusCode" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringContent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "XmlNodeList" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "DataInputStream" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Certificate2" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PerformanceCounter" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PowerShell" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Chain" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Certificate" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DataTable" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "2_SecureString" and programElementType = "Method" and programElementName = "PSCredential" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_XmlReader" and programElementType = "Method" and programElementName = "ReadObject" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_XmlWriter" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_HttpMessageHandler" and programElementType = "Method" and programElementName = "HttpClient" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_TextReader" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_TextWriter" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "TableServiceContext" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "RNGCryptoServiceProvider" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpRequestMessage" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpResponseMessage" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ObjectResult" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "UnityContainer" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ObjectContent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StreamContent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ByteArrayContent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ImageList" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JoinableTaskContext" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HeaderDelimitedMessageHandler" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ContainerControlledLifetimeManager" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "CMKCosmosDbStore" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SecureString" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ReaderWriterLockSlim" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PooledStopwatch" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "WindowPane" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ToolWindowPane" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "LoggerFactory" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DbContext" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "1_DbConnection" and programElementType = "Method" and programElementName = "DbContext" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HashAlgorithm" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SHA256" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "WebRequestHandler" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ShellSettingsManager" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PageSetupDialog" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonMessageFormatter" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "XmlTextReader" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "2_Stream" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "2_TextReader" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_CancellationTokenSource" and programElementType = "Method" and programElementName = "Exchange<CancellationTokenSource>" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_CancellationToken" and programElementType = "Method" and programElementName = "CreateLinkedTokenSource" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonDocument" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "AsyncSemaphore" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DynamicCertificateValidatorFactory" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonReader" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpContent" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpClientHandler" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "TelemetryConfiguration" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Cursor" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "InputStreamWrapper" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "1_TextReader" and programElementType = "Method" and programElementName = "JsonTextReader" and annotation = "MustCallAlias")
-    or (filename = "Library" and lineNumber = "0_DbCommand" and programElementType = "Parameter" and programElementName = "this" and annotation = "Owning")
-}
- 
-
 predicate checkForResourceType(RefType type)
 {
     (type instanceof Generic and exists(RefType btype | btype = type.getABaseType() and checkForResourceType(btype)))
     or
     (type instanceof CollectionType and exists(RefType t | t = type.getAChild*() and type != t and checkForResourceType(t)))
     or
-    (not type instanceof Generic and not type instanceof CollectionType and type.fromLibrary() and noEmptyMustCallAnnotation(type) and type instanceof DisposableType)
+    (not type instanceof Generic and not type instanceof CollectionType and noEmptyMustCallAnnotation(type) and type instanceof DisposableType)
+    or
+    exists(Field f | f = type.getAField() and isOwningField(f))
+    or
+    exists(Property f | f = type.getAProperty() and isOwningProperty(f))
+    or
+    (noEmptyMustCallAnnotation(type) and exists(RefType t | t = type.getABaseType() and type != t and checkForResourceType(t)))
+    or
+    (type instanceof Generic and exists(RefType t | t = type.getABaseType() and type != t and checkForResourceType(t)))
 }
  
 predicate hasCreateMustCallFor(Method c, Member p) 
@@ -246,6 +163,12 @@ predicate isOwningOnParam(Callable c, Parameter p)
         and c = fr.getEnclosingCallable() and isReturnExpr(c, e)
         and checkAlias(DataFlow::exprNode(fr), DataFlow::exprNode(e))
     )
+    or
+    exists(| c instanceof Constructor and c.fromSource() and checkForResourceType(c.getDeclaringType())
+            and c.getNumberOfParameters() = 0 
+            and not exists(FieldWrite fw | c = fw.getEnclosingCallable() and checkForResourceType(fw.getTarget().getType()))
+            and not exists(PropertyWrite fw | c = fw.getEnclosingCallable() and checkForResourceType(fw.getTarget().getType()))
+    )
  }
  
  predicate hasMustCallAlias(Callable c, Parameter p)
@@ -280,20 +203,20 @@ predicate satisfyMCAOnConstructor(Constructor c, DataFlow::Node p, DataFlow::Nod
         assign.getLValue() = fw and isOwningField(fw.getQualifiedDeclaration()) and
         assign.getRValue() = node.asExpr() and checkAlias(p, node)
     ) 
-    // or
-    // exists(PropertyWrite fw, Assignment assign |
-    //     assign.getEnclosingCallable() = c and
-    //     assign.getLValue() = fw and isOwningProperty(fw.getQualifiedDeclaration()) and
-    //     assign.getRValue() = node.asExpr() and checkAlias(p, node)
-    // ) 
-    // or
-    // exists(Call call , Constructor m, int i |
-    //     call.getEnclosingCallable() = c and
-    //     call.getARuntimeTarget() instanceof Constructor and
-    //     m = call.getARuntimeTarget() and m != c and
-    //     node.asExpr() = call.getArgument(i) and checkAlias(p, node) and
-    //     hasMustCallAlias(m, m.getParameter(i))
-    // )
+    or
+    exists(PropertyWrite fw, Assignment assign |
+        assign.getEnclosingCallable() = c and
+        assign.getLValue() = fw and isOwningProperty(fw.getQualifiedDeclaration()) and
+        assign.getRValue() = node.asExpr() and checkAlias(p, node)
+    ) 
+    or
+    exists(Call call , Constructor m, int i |
+        call.getEnclosingCallable() = c and
+        call.getARuntimeTarget() instanceof Constructor and
+        m = call.getARuntimeTarget() and m != c and
+        node.asExpr() = call.getArgument(i) and checkAlias(p, node) and
+        hasMustCallAlias(m, m.getParameter(i))
+    )
 }
  
 predicate isReturnExpr(Callable c, Expr e)
@@ -443,7 +366,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias) {
  predicate hasEnsuresCalledMethods(Method c, Member p, Method m) {
     exists(MethodCall mc , FieldRead fr, Field f | f = p and
         fr.getEnclosingCallable() = c and checkForResourceType(f.getType()) and
-        fr = mc.getQualifier().getAChildExpr*() and m = mc.getARuntimeTarget() and
+        DataFlow::localFlow(DataFlow::exprNode(fr), DataFlow::exprNode(mc.getQualifier().getAChildExpr*())) and m = mc.getARuntimeTarget() and
         fr.getTarget() = f and sinkFor(c, DataFlow::exprNode(mc.getQualifier()))
         // isInMustCall(f.getType(), m)
         and not exists(AssignableDefinition def | c = def.getEnclosingCallable() and def.getTarget() = f and def.getSource().reachableFrom(fr) and not def.getSource() instanceof NullLiteral)
@@ -454,7 +377,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias) {
     or
     exists(MethodCall mc , PropertyRead fr, Property f | f = p and 
         fr.getEnclosingCallable() = c and checkForResourceType(f.getType()) and
-        fr = mc.getQualifier().getAChildExpr*() and m = mc.getARuntimeTarget() and
+        DataFlow::localFlow(DataFlow::exprNode(fr), DataFlow::exprNode(mc.getQualifier().getAChildExpr*())) and m = mc.getARuntimeTarget() and
         fr.getTarget() = f and sinkFor(c, DataFlow::exprNode(mc.getQualifier()))
         // isInMustCall(f.getType(), m)
         and not exists(AssignableDefinition def | c = def.getEnclosingCallable() and def.getTarget() = f and def.getSource().reachableFrom(fr) and not def.getSource() instanceof NullLiteral)
@@ -499,7 +422,7 @@ string getRelativePathForMethod(Callable c)
         result = cl.getNamespace().getQualifiedName() + "/" + c.getLocation().getFile().getBaseName())
 }
 
-string getRelativePathForClass(Class c)
+string getRelativePathForClass(RefType c)
 {
     result = c.getNamespace().getQualifiedName() + "/" + c.getLocation().getFile().getBaseName()
 }
@@ -528,37 +451,37 @@ Callable getInstantiatedMethods(Callable c, Parameter p)
 string inferAnnotations(Element e)
 {
     exists(RefType type, Callable c, string str | type = e and type.fromSource() and checkForResourceType(type) and c = type.getAMethod() and hasEnsuresCalledMethods(c, _, _) and
-        str = getRelativePathForClass(type) + "," + type.getLocation().getStartLine() + ",Class," + type.getName() + ",MustCall/" + c.getName()
+        str = "or (filename = \"" + getRelativePathForClass(type) + "\" and lineNumber = \"" + type.getLocation().getStartLine() + "\" and programElementType = \"Class\" and programElementName = \"" + type.getName() + "\" and annotation = \"MustCall/" + c.getName() + "\")"
         | result = str
     )
     or
     exists(Callable c, Method m, Field f, Class cl, string str1, string str2 | 
         c =  e and c = cl.getAMember() and f = cl.getAMember() and checkForResourceType(f.getType()) and
         hasEnsuresCalledMethods(c, f, m) and
-        str1 = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",EnsuresCalledMethods/" + getRelativeNameForMember(f) + "/" + m.getName() and 
-        str2 = getRelativePathForClass(cl) + "," + cl.getLocation().getStartLine() + ",Class," + cl.getName() + ",MustCall/" + c.getName()
+        str1 = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"EnsuresCalledMethods/" + getRelativeNameForMember(f) + "/" + m.getName() + "\")"
+        and str2 = "or (filename = \"" + getRelativePathForClass(cl) + "\" and lineNumber = \"" + cl.getLocation().getStartLine() + "\" and programElementType = \"Class\" and programElementName = \"" + cl.getName() + "\" and annotation = \"MustCall/" + c.getName() + "\")"
         | result = [str1, str2]
     )
     or
     exists(Callable c, Method m, Property f, Class cl, string str1, string str2 | 
         c =  e and c = cl.getAMember() and f = cl.getAMember() and checkForResourceType(f.getType()) and
         hasEnsuresCalledMethods(c, f, m) and
-        str1 = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",EnsuresCalledMethods/" + getRelativeNameForMember(f) + "/" + m.getName() and 
-        str2 = getRelativePathForClass(cl) + "," + cl.getLocation().getStartLine() + ",Class," + cl.getName() + ",MustCall/" + c.getName()
+        str1 = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"EnsuresCalledMethods/" + getRelativeNameForMember(f) + "/" + m.getName() + "\")"
+        and str2 = "or (filename = \"" + getRelativePathForClass(cl) + "\" and lineNumber = \"" + cl.getLocation().getStartLine() + "\" and programElementType = \"Class\" and programElementName = \"" + cl.getName() + "\" and annotation = \"MustCall/" + c.getName() + "\")"
         | result = [str1, str2]
     )
     or
     exists(Field f, string str | e = f and
         checkForResourceType(f.getType()) and 
         isOwningField(f) and
-        str = getRelativePathForMember(f) + "," + f.getLocation().getStartLine() + ",Field," + getRelativeNameForMember(f) + ",Owning"        
+        str = "or (filename = \"" + getRelativePathForMember(f) + "\" and lineNumber = \"" + f.getLocation().getStartLine() + "\" and programElementType = \"Field\" and programElementName = \"" + getRelativeNameForMember(f) + "\" and annotation = \"Owning\")"
         | result = str
     )
     or
     exists(Property f, string str | e = f and
         checkForResourceType(f.getType()) and
         isOwningProperty(f) and
-        str = getRelativePathForMember(f) + "," + f.getLocation().getStartLine() + ",Property," + getRelativeNameForMember(f) + ",Owning"        
+        str = "or (filename = \"" + getRelativePathForMember(f) + "\" and lineNumber = \"" + f.getLocation().getStartLine() + "\" and programElementType = \"Property\" and programElementName = \"" + getRelativeNameForMember(f) + "\" and annotation = \"Owning\")"
         | result = str
     )
     or
@@ -567,15 +490,15 @@ string inferAnnotations(Element e)
         if p.getType().containsTypeParameters() and hasMustCallAlias(c, p) 
         then
             exists(string str1, string str2, string str3, Callable c1 | c1 = getInstantiatedMethods(c, p) and
-                str1 = getRelativePathForPar(p) + "," + p.getLocation().getStartLine() + ",Parameter," + p.getName() + ",MustCallAlias" and 
-                str2 = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",MustCallAlias" and
-                str3 = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c1.getName() + ",MustCallAlias"
+                str1 = "or (filename = \"" + getRelativePathForPar(p) + "\" and lineNumber = \"" + p.getLocation().getStartLine() + "\" and programElementType = \"Parameter\" and programElementName = \"" + p.getName() + "\" and annotation = \"MustCallAlias\")"
+                and str2 = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"MustCallAlias\")"
+                and str3 = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c1.getName() + "\" and annotation = \"MustCallAlias\")"
                 | result = [str1, str2, str3])
         else if checkForResourceType(p.getType()) and hasMustCallAlias(c, p) 
         then
             exists(string str1, string str2 |
-                str1 = getRelativePathForPar(p) + "," + p.getLocation().getStartLine() + ",Parameter," + p.getName() + ",MustCallAlias" and 
-                str2 = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",MustCallAlias"
+                str1 = "or (filename = \"" + getRelativePathForPar(p) + "\" and lineNumber = \"" + p.getLocation().getStartLine() + "\" and programElementType = \"Parameter\" and programElementName = \"" + p.getName() + "\" and annotation = \"MustCallAlias\")"
+                and str2 = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"MustCallAlias\")"
                 | result = [str1, str2])
         else
             result = ""
@@ -584,24 +507,120 @@ string inferAnnotations(Element e)
     exists(Parameter p , Callable c | p = e and
         // (p.getType().containsTypeParameters() or checkForResourceType(p.getType())) and
         p = c.getParameter(_) and c.fromSource() and c.hasBody() and isOwningOnParam(c, p) |
-        result = getRelativePathForPar(p) + "," + p.getLocation().getStartLine() + ",Parameter," + p.getName() + ",Owning"
+        result = "or (filename = \"" + getRelativePathForPar(p) + "\" and lineNumber = \"" + p.getLocation().getStartLine() + "\" and programElementType = \"Parameter\" and programElementName = \"" + p.getName() + "\" and annotation = \"Owning\")"
     )
     or
     exists(Callable c, Member f | 
         e = c and hasCreateMustCallFor(c, f) | 
-        result = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",CreateMustCallFor/" + getRelativeNameForMember(f)
+        result = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"CreateMustCallFor/" + getRelativeNameForMember(f) + "\")"
     )
     or
     exists(Callable c | 
         e = c and isNotOwningOnMethod(c) | 
-        result = getRelativePathForMethod(c) + "," + c.getLocation().getStartLine() + ",Method," + c.getName() + ",NonOwning")
+        result = "or (filename = \"" + getRelativePathForMethod(c) + "\" and lineNumber = \"" + c.getLocation().getStartLine() + "\" and programElementType = \"Method\" and programElementName = \"" + c.getName() + "\" and annotation = \"NonOwning\")"
+    )
     or
         result = ""
+}
+
+predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
+{
+    (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamWriter" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryWriter" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_Socket" and programElementType = "Method" and programElementName = "NetworkStream" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "2_SqlConnection" and programElementType = "Method" and programElementName = "SqlCommand" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0_SqlCommand" and programElementType = "Method" and programElementName = "ExecuteReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Task" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringReader" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "MemoryStream" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Method" and programElementName = "CancellationTokenSource" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringTokenizer" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Process" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringWriter" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "MemoryCache" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PollingCounter" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "IncrementingPollingCounter" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "FeedIterator" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "1_String" and programElementType = "Method" and programElementName = "Open" and annotation = "Owning")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SubscriptionToken" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "CountdownEvent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0_Socket" and programElementType = "Method" and programElementName = "Accept" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "1_FileStream" and programElementType = "Method" and programElementName = "CreateFromFile" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_MemoryMappedFile" and programElementType = "Method" and programElementName = "CreateViewByteBuffer" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ServiceProvider" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Method" and programElementName = "EnsureSuccessStatusCode" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringContent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "XmlNodeList" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "DataInputStream" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Certificate2" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PerformanceCounter" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PowerShell" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Chain" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "X509Certificate" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DataTable" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "2_SecureString" and programElementType = "Method" and programElementName = "PSCredential" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_XmlReader" and programElementType = "Method" and programElementName = "ReadObject" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_XmlWriter" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_HttpMessageHandler" and programElementType = "Method" and programElementName = "HttpClient" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_TextReader" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_TextWriter" and programElementType = "Method" and programElementName = "Create" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "TableServiceContext" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "RNGCryptoServiceProvider" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpRequestMessage" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpResponseMessage" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ObjectResult" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "UnityContainer" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ObjectContent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StreamContent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ByteArrayContent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ImageList" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JoinableTaskContext" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HeaderDelimitedMessageHandler" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ContainerControlledLifetimeManager" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "CMKCosmosDbStore" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SecureString" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ReaderWriterLockSlim" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PooledStopwatch" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "WindowPane" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ToolWindowPane" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "LoggerFactory" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DbContext" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "1_DbConnection" and programElementType = "Method" and programElementName = "DbContext" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HashAlgorithm" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SHA256" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "WebRequestHandler" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ShellSettingsManager" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "PageSetupDialog" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonMessageFormatter" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "XmlTextReader" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "2_Stream" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "2_TextReader" and programElementType = "Method" and programElementName = "XmlTextReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_CancellationTokenSource" and programElementType = "Method" and programElementName = "Exchange<CancellationTokenSource>" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_CancellationToken" and programElementType = "Method" and programElementName = "CreateLinkedTokenSource" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonDocument" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "AsyncSemaphore" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "DynamicCertificateValidatorFactory" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "JsonReader" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpContent" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "HttpClientHandler" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "TelemetryConfiguration" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Cursor" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "InputStreamWrapper" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "1_TextReader" and programElementType = "Method" and programElementName = "JsonTextReader" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "0_DbCommand" and programElementType = "Parameter" and programElementName = "this" and annotation = "Owning")
+    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<BuildHttpClient>" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<GitHttpClient>" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<TestResultsHttpClient>" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<TestResultsHttpClient>" and annotation = "NonOwning")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "BuildTrackerService" and annotation = "MustCall")
+    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SemaphoreSlim" and annotation = "MustCall")
 }
 
 from Element e, string str
 where   not isInMockOrTestFile(e) and // Ignore the test code
         str = inferAnnotations(e) and str != ""
-        // and e.getLocation().getFile().getBaseName().regexpMatch("")
+        // and e.getLocation().getFile().getBaseName().regexpMatch("AgentClient.cs")
 select e, str
-

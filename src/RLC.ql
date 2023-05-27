@@ -1,10 +1,10 @@
 /**
- * @name Resource Leak Analysis (RLA) (for only library types)
+ * @name Resource Leak Analysis (RLA) (for all types)
  * @description Resource Leak Analysis with Annotations (separately provided in a predicate).
  * @kind problem
  * @problem.severity warning
  * @precision high
- * @id cs/csharp-resource-leak-checker
+ * @id cs/csharp-resource-leak-checker-for-all-types
  * @tags efficiency
  *       maintainability
  */
@@ -59,10 +59,12 @@
      exists(Call call, Member f | checkEncapsulationMethodHasCreateMustCallForAnnotation(call, f) and call.(MethodCall).getQualifier() = node.asExpr())
      or
      // Return statement whose type is ResourceType
-     exists(Expr e, Callable c | e = node.asExpr() and c = e.getEnclosingCallable() and isReturnExpr(c, e) and isOwningMethod(c))
+     exists(Expr e, Callable c | e = node.asExpr() and c = e.getEnclosingCallable() and isReturnExpr(c, e) and checkForResourceType(e.getType())) // and isOwningMethod(c))
      or
      // Things that are added to a collection of some kind are likely to escape the scope
-     exists(MethodCall mc | mc.getAnArgument() = node.asExpr() | mc.getTarget().hasName("Add"))
+     exists(MethodCall mc | mc.getAnArgument() = node.asExpr() | mc.getTarget().getName().regexpMatch("Add.*") and 
+        (mc.getQualifier().getType() instanceof CollectionType or mc.getType() instanceof CollectionType)
+    )
      or 
      exists(AssignableDefinition def, Member f | node.asExpr() = def.getSource().getAChildExpr*() and f = def.getTarget() and (isOwningField(f.(Field)) or isOwningProperty(f.(Property))))
  }
@@ -120,14 +122,18 @@ predicate checkCorrectnessOfECM(Callable c, Callable m, Member p)
         and call.getEnclosingCallable() = c and call.getARuntimeTarget().getName() = m.getName()
         and exp1 = p.getAnAccess() and (exp2 = call.getQualifier().getAChildExpr*() or exp2 = call.getAnArgument())
         // and exp1.getAChildExpr*()  = exp2.getAChildExpr*())
-        and exp1 = exp2)
+        // and exp1 = exp2
+        and DataFlow::localFlow(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2))
+    )
         // and isAlias(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2)))
     or
     exists(MethodCall call, Expr exp1, Expr exp2, Property f | f = p and isOwningProperty(f) 
         and call.getEnclosingCallable() = c and call.getARuntimeTarget().getName() = m.getName()
         and exp1 = p.getAnAccess() and (exp2 = call.getQualifier().getAChildExpr*() or exp2 = call.getAnArgument())
         // and exp1.getAChildExpr*()  = exp2.getAChildExpr*())
-        and exp1 = exp2)
+        // and exp1 = exp2
+        and DataFlow::localFlow(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2))
+    )
         // and isAlias(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2)))
 }
  
@@ -462,7 +468,7 @@ string getRelativePathForPar(Parameter p)
      result = p.getDeclaringType() + "." + p.getName()
  }
   
- string getRelativePathForClass(Class c)
+ string getRelativePathForClass(RefType c)
  {
      result = c.getNamespace().getQualifiedName() + "/" + c.getLocation().getFile().getBaseName()
  }
@@ -662,8 +668,6 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias)
         )
     )
 }
- 
- 
 predicate checkAlias(DataFlow::Node node1, DataFlow::Node node2)
 {
     node1.getEnclosingCallable() = node2.getEnclosingCallable()
@@ -674,6 +678,10 @@ predicate checkAlias(DataFlow::Node node1, DataFlow::Node node2)
         exists(Expr e1, Expr e2 | e1 = node1.asExpr() and e2 = node2.asExpr() and e1 = e2.getAChildExpr*())
         or
         (DataFlow::localFlow(node1, node2) and not exists(TernaryOperation op | op.getAnOperand() = node2.asExpr()))
+        or
+        exists(ForeachStmt stmt, Expr e1, Expr e2 | 
+            e1 = stmt.getAVariable().getAnAccess() and e2 = stmt.getIterableExpr()
+            and node1.asExpr() = e2 and node2.asExpr() = e1)
         or
         isResourceAlias(node1, node2)
         or
@@ -693,6 +701,8 @@ predicate isAlias(DataFlow::Node node1, DataFlow::Node node2)
  
  //--------------------------Identifying Resource Types----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
+
+
 // Check for ResourceTypes recursively
  
 predicate checkForResourceType(RefType type)
@@ -701,7 +711,15 @@ predicate checkForResourceType(RefType type)
     or
     (type instanceof CollectionType and exists(RefType t | t = type.getAChild*() and type != t and checkForResourceType(t)))
     or
-    (not type instanceof Generic and not type instanceof CollectionType and type.fromLibrary() and noEmptyMustCallAnnotation(type) and type instanceof DisposableType)
+    hasMustCallAnnotation(type)
+    or
+    exists(Field f | f = type.getAField() and isOwningField(f))
+    or
+    exists(Property f | f = type.getAProperty() and isOwningProperty(f))
+    or
+    (noEmptyMustCallAnnotation(type) and exists(RefType t | t = type.getABaseType() and type != t and checkForResourceType(t)))
+    or
+    (not type instanceof Generic and not type instanceof CollectionType and noEmptyMustCallAnnotation(type) and type instanceof DisposableType)
 }
  
  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -842,14 +860,24 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
          isSource(src) and not suppressAlertsWithAnnotationsE(p) 
          and reachableWithoutDisposal(src, src.getEnclosingCallable().getExitPoint())
-        | result = "Verifying Owning Parameter (" + src.getType() + ") " + p.getName() + " in method " + src.getEnclosingCallable().getName()
+        | 
+            if p.getType().fromLibrary()
+            then
+                result = "Verifying Owning Parameter (" + src.getType() + " - L) " + p.getName() + " in method " + src.getEnclosingCallable().getName()
+            else
+            result = "Verifying Owning Parameter (" + src.getType() + "- C) " + p.getName() + " in method " + src.getEnclosingCallable().getName()
          )
      or
      exists(Expr exp, DataFlow::Node src | exp = e and src = DataFlow::exprNode(exp) and 
          checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
          isSource(src) and not suppressAlertsWithAnnotationsE(exp) 
          and reachableWithoutDisposal(src, src.getEnclosingCallable().getExitPoint())
-         | result = "Resource Leak (" + src.getType() + ") " + " in method " + src.getEnclosingCallable().getName()
+         | 
+            if src.getType().fromLibrary()
+            then
+                result = "Resource Leak (" + src.getType() + "- L) " + " in method " + src.getEnclosingCallable().getName()
+            else
+                result = "Resource Leak (" + src.getType() + "- C) " + " in method " + src.getEnclosingCallable().getName()
         )
      or
      exists(Expr exp, DataFlow::Node src, Field f | exp = e and src = DataFlow::exprNode(exp) 
@@ -858,9 +886,17 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          isSource(src) and not suppressAlertsWithAnnotationsE(exp)
          |
          if f.isReadOnly() then
-            result = "Resource Leak allocated at Readonly Field initialization (" + src.getType() + ") " + f.getName() + " in class " + f.getDeclaringType()
+            if f.getType().fromLibrary()
+            then
+                result = "Resource Leak (" + src.getType() + "- L) " + " in method " + src.getEnclosingCallable().getName()
+            else
+                result = "Resource Leak (" + src.getType() + "- C) " + " in method " + src.getEnclosingCallable().getName()
          else    
-            result = "Resource Leak allocated at Non-Readonly Field initialization (" + src.getType() + ") " + f.getName() + " in class " + f.getDeclaringType()
+            if f.getType().fromLibrary()
+            then
+                 result = "Resource Leak allocated at Non-Readonly Field initialization (" + src.getType() + "- L) " + f.getName() + " in class " + f.getDeclaringType()
+            else
+                 result = "Resource Leak allocated at Non-Readonly Field initialization (" + src.getType() + "- C) " + f.getName() + " in class " + f.getDeclaringType()
          ) 
      or
      // Parameter 'p' with "MustCallAlias" annotation does not satisfy the semantics of the annotation
@@ -869,8 +905,13 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
          isMustCallAliasParameter(p) and not checkCorrectnessOfMustCallAlias(p, c)
          and not suppressAlertsWithAnnotationsE(p)
-         | result = "Verifying MustCallAlias Parameter (" + src.getType() + ") " + p.getName() + " in method " + src.getEnclosingCallable().getName()
-         )
+         | 
+            if p.getType().fromLibrary()
+            then
+                result = "Verifying MustCallAlias Parameter (" + src.getType() + "- L) " + p.getName() + " in method " + src.getEnclosingCallable().getName()
+            else
+                result = "Verifying MustCallAlias Parameter (" + src.getType() + "- C) " + p.getName() + " in method " + src.getEnclosingCallable().getName()
+                )
      or
      // No Disposal before the reassignment
      exists(AssignableDefinition a, Member f, Callable c, DataFlow::Node src, Expr exp | c = e and a = hasOwningMemberDefinition(c, f) 
@@ -879,21 +920,26 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          checkForResourceType(src.getType()) and not isInMockOrTestFile(src)
          and not checkForSinkBeforeAssignmentInMethodWithCreateMustCallForAnnotation(a) 
          and not suppressAlertsWithAnnotationsE(exp)
-         | result = "Older Resource Leak not deallocated (" + src.getType() + ") " + f.getName() + " in method " + c.getName()
+         | 
+            if src.getType().fromLibrary()
+            then
+                result = "Older Resource Leak not deallocated (" + src.getType() + "- L) " + f.getName() + " in method " + c.getName()
+            else
+                result = "Older Resource Leak not deallocated (" + src.getType() + "- C) " + f.getName() + " in method " + c.getName()
          )
      or
      // No EnsuresCalledMethods attribute associated to an Owning Field/Property
      exists(Member f | f = e and f = flagMissingAnnotation() and not suppressAlertsWithAnnotationsM(f) and not isInMockOrTestFileE(e)
      |
      if (f.(Field).isReadOnly() or f.(Property).isReadOnly()) then
-        result = "Missing ECM for ReadOnly Owning Field/Property " + f.getName() + " in class " + f.getDeclaringType()
+        result = "Missing ECM for ReadOnly Owning Field/Property " + f.getName() + " in class " + f.getDeclaringType() + "- C"
      else    
-        result = "Missing ECM for Non-ReadOnly Owning Field/Property " + f.getName() + " in class " + f.getDeclaringType()
+        result = "Missing ECM for Non-ReadOnly Owning Field/Property " + f.getName() + " in class " + f.getDeclaringType() + "- C"
      )
      or
      // No CreateMustCallFor attribute associated to a method that contains an assignment to an Owning Field/Property
      exists(Method m | m = e and missingCreateMustCallFor(m) and not suppressAlertsWithAnnotationsMet(m) and not isInMockOrTestFileE(e)
-     | result = "Missing CMC on method " + m.getName()
+     | result = "Missing CMC on method " + m.getName() + "- C"
      )
      or
      // Method with EnsuresCalledMethods attribute does not contain the call to dispose the resource referenced by the Field/Property
@@ -901,9 +947,9 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
         and not isInMockOrTestFileE(e) and not suppressAlertsWithAnnotationsMet(c)
         | 
         if (f.(Field).isReadOnly() or f.(Property).isReadOnly()) then
-            result = "Verifying ECM Annotation for Readonly Field/Property " + f.getName() + " in method " + m.getName()
+            result = "Verifying ECM Annotation for Readonly Field/Property " + f.getName() + " in method " + m.getName() + "- C"
         else    
-            result = "Verifying ECM Annotation for Non-Readonly Field/Property " + f.getName() + " in method " + m.getName()
+            result = "Verifying ECM Annotation for Non-Readonly Field/Property " + f.getName() + " in method " + m.getName() + "- C"
         )
      or
      // Method with CreateMusTCallFor attribute does not contain an assignment to an Owning Field/Property
@@ -911,9 +957,9 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
         and not isInMockOrTestFileE(e) and not suppressAlertsWithAnnotationsMet(c)
         | 
         if (f.(Field).isReadOnly() or f.(Property).isReadOnly()) then
-            result = "Verifying CMC Annotation for Readonly Field/Property " + f.getName() + " in method " + c.getName()
+            result = "Verifying CMC Annotation for Readonly Field/Property " + f.getName() + " in method " + c.getName() + "- C"
         else    
-            result = "Verifying CMC Annotation for Non-Readonly Field/Property " + f.getName() + " in method " + c.getName()
+            result = "Verifying CMC Annotation for Non-Readonly Field/Property " + f.getName() + " in method " + c.getName() + "- C"
      )
  }
  
@@ -930,26 +976,19 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
  
  //--------------------------Logic for suppressing known alerts---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
-
  predicate suppressAlertsWithAnnotations(DataFlow::Node src)
  {
      readAnnotation(getRelativePathForSource(src), src.getLocation().getStartLine().toString(),_,_,"Suppress")
-     or
-     readAnnotation(getRelativePathForSource(src), src.getLocation().getStartLine().toString(),_,_,"TP-Suppress")
  }
  
  predicate suppressAlertsWithAnnotationsMet(Callable c)
  {
      readAnnotation(getRelativePathForMethod(c),c.getLocation().getStartLine().toString(),_,_,"Suppress")
-     or
-     readAnnotation(getRelativePathForMethod(c),c.getLocation().getStartLine().toString(),_,_,"TP-Suppress")
  }
  
  predicate suppressAlertsWithAnnotationsM(Member f)
  {
      readAnnotation(getRelativePathForMember(f),f.getLocation().getStartLine().toString(),_,_,"Suppress")
-     or
-     readAnnotation(getRelativePathForMember(f),f.getLocation().getStartLine().toString(),_,_,"TP-Suppress")
  }
  
  predicate suppressAlertsWithAnnotationsE(Element e)
@@ -992,18 +1031,13 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
  // file.csv has annotations that are added manually to the file. 
  // Each row contains comma-separated 5 columns which forms the arguments of the external predicate readAnnotation.
  
-// predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
-// {
-// }
- 
+//  predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
+//  {
+//  }
+  
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 from Element e, string str
 where  str = mayNotBeDisposedAlt(e) // actual analysis
-        // and not suppressAlerts(src) 
         // and filterFileWise(e, "")
 select e, str
-
-// from DataFlow::Node src
-// where   isSource(src) and not isInMockOrTestFile(src) and checkForResourceType(src.getType())
-// select src
