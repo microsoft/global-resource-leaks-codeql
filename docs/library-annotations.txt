@@ -3,7 +3,6 @@
      or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamWriter" and annotation = "MustCallAlias")
      or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryWriter" and annotation = "MustCallAlias")
      or (filename = "Library" and lineNumber = "1_Socket" and programElementType = "Method" and programElementName = "NetworkStream" and annotation = "MustCallAlias")
-     or (filename = "Library" and lineNumber = "2_SqlConnection" and programElementType = "Method" and programElementName = "SqlCommand" and annotation = "MustCallAlias")
      or (filename = "Library" and lineNumber = "0_SqlCommand" and programElementType = "Method" and programElementName = "ExecuteReader" and annotation = "MustCallAlias")
      or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Task" and annotation = "MustCall")
      or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringReader" and annotation = "MustCall")
@@ -90,3 +89,5 @@
      or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<TestResultsHttpClient>" and annotation = "NonOwning")
      or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "BuildTrackerService" and annotation = "MustCall")
      or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SemaphoreSlim" and annotation = "MustCall")
+     or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ManualResetEventSlim" and annotation = "MustCall")
+     or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "EventSource" and annotation = "MustCall")

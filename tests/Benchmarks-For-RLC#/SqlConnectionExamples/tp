@@ -1,0 +1,113 @@
+[2023-06-05 09:25:13] [build-stdout] CodeQL C# autobuilder
+[2023-06-05 09:25:14] [build-stdout] Working directory: /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples
+[2023-06-05 09:25:14] [build-stdout] Attempting to build using .NET Core
+[2023-06-05 09:25:14] [build-stdout] Running dotnet --info
+[2023-06-05 09:25:15] [build-stdout] .NET Core SDK (reflecting any global.json):
+[2023-06-05 09:25:15] [build-stdout]  Version:   3.1.426
+[2023-06-05 09:25:15] [build-stdout]  Commit:    e81f6c8565
+[2023-06-05 09:25:15] [build-stdout] Runtime Environment:
+[2023-06-05 09:25:15] [build-stdout]  OS Name:     ubuntu
+[2023-06-05 09:25:15] [build-stdout]  OS Version:  20.04
+[2023-06-05 09:25:15] [build-stdout]  OS Platform: Linux
+[2023-06-05 09:25:15] [build-stdout]  RID:         ubuntu.20.04-x64
+[2023-06-05 09:25:15] [build-stdout]  Base Path:   /usr/share/dotnet/sdk/3.1.426/
+[2023-06-05 09:25:15] [build-stdout] Host (useful for support):
+[2023-06-05 09:25:15] [build-stdout]   Version: 3.1.32
+[2023-06-05 09:25:15] [build-stdout]   Commit:  f94bb2c3ff
+[2023-06-05 09:25:15] [build-stdout] .NET Core SDKs installed:
+[2023-06-05 09:25:15] [build-stdout]   3.1.426 [/usr/share/dotnet/sdk]
+[2023-06-05 09:25:15] [build-stdout] .NET Core runtimes installed:
+[2023-06-05 09:25:15] [build-stdout]   Microsoft.AspNetCore.App 3.1.32 [/usr/share/dotnet/shared/Microsoft.AspNetCore.App]
+[2023-06-05 09:25:15] [build-stdout]   Microsoft.NETCore.App 3.1.32 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
+[2023-06-05 09:25:15] [build-stdout] To install additional .NET Core runtimes or SDKs:
+[2023-06-05 09:25:15] [build-stdout]   https://aka.ms/dotnet-download
+[2023-06-05 09:25:15] [build-stdout] Exit code 0
+[2023-06-05 09:25:15] [build-stdout] Running dotnet clean /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj
+[2023-06-05 09:25:15] [build-stdout] Microsoft (R) Build Engine version 16.7.3+2f374e28e for .NET
+[2023-06-05 09:25:15] [build-stdout] Copyright (C) Microsoft Corporation. All rights reserved.
+[2023-06-05 09:25:15] [build-stdout] Build started 06/05/2023 09:25:15.
+[2023-06-05 09:25:16] [build-stdout]      1>Project "/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj" on node 1 (Clean target(s)).
+[2023-06-05 09:25:16] [build-stdout]      1>/usr/share/dotnet/sdk/3.1.426/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error NETSDK1005: Assets file '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/obj/project.assets.json' doesn't have a target for '.NETFramework,Version=v7.0'. Ensure that restore has run and that you have included 'net70' in the TargetFrameworks for your project. [/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj]
+[2023-06-05 09:25:16] [build-stdout]      1>Done Building Project "/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj" (Clean target(s)) -- FAILED.
+[2023-06-05 09:25:16] [build-stdout] Build FAILED.
+[2023-06-05 09:25:16] [build-stdout]        "/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj" (Clean target) (1) ->
+[2023-06-05 09:25:16] [build-stdout]        (ResolvePackageAssets target) -> 
+[2023-06-05 09:25:16] [build-stdout]          /usr/share/dotnet/sdk/3.1.426/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error NETSDK1005: Assets file '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/obj/project.assets.json' doesn't have a target for '.NETFramework,Version=v7.0'. Ensure that restore has run and that you have included 'net70' in the TargetFrameworks for your project. [/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj]
+[2023-06-05 09:25:16] [build-stdout]     0 Warning(s)
+[2023-06-05 09:25:16] [build-stdout]     1 Error(s)
+[2023-06-05 09:25:16] [build-stdout] Time Elapsed 00:00:01.13
+[2023-06-05 09:25:16] [build-stdout] Exit code 1
+[2023-06-05 09:25:16] [build-stdout] Running dotnet restore /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj
+[2023-06-05 09:25:18] [build-stdout]   Determining projects to restore...
+[2023-06-05 09:25:18] [build-stdout]   All projects are up-to-date for restore.
+[2023-06-05 09:25:18] [build-stdout] Exit code 0
+[2023-06-05 09:25:18] [build-stdout] Running dotnet build --no-incremental /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj
+[2023-06-05 09:25:19] [build-stdout] Microsoft (R) Build Engine version 16.7.3+2f374e28e for .NET
+[2023-06-05 09:25:19] [build-stdout] Copyright (C) Microsoft Corporation. All rights reserved.
+[2023-06-05 09:25:20] [build-stdout]   Determining projects to restore...
+[2023-06-05 09:25:20] [build-stdout]   All projects are up-to-date for restore.
+[2023-06-05 09:25:21] [build-stdout] /usr/share/dotnet/sdk/3.1.426/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error NETSDK1005: Assets file '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/obj/project.assets.json' doesn't have a target for '.NETFramework,Version=v7.0'. Ensure that restore has run and that you have included 'net70' in the TargetFrameworks for your project. [/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj]
+[2023-06-05 09:25:21] [build-stdout] Build FAILED.
+[2023-06-05 09:25:21] [build-stdout] /usr/share/dotnet/sdk/3.1.426/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error NETSDK1005: Assets file '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/obj/project.assets.json' doesn't have a target for '.NETFramework,Version=v7.0'. Ensure that restore has run and that you have included 'net70' in the TargetFrameworks for your project. [/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj]
+[2023-06-05 09:25:21] [build-stdout]     0 Warning(s)
+[2023-06-05 09:25:21] [build-stdout]     1 Error(s)
+[2023-06-05 09:25:21] [build-stdout] Time Elapsed 00:00:01.72
+[2023-06-05 09:25:21] [build-stdout] Exit code 1
+[2023-06-05 09:25:21] [build-stdout] Attempting to build using MSBuild
+[2023-06-05 09:25:21] [build-stdout] Running mono /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/.nuget/nuget.exe restore /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj -DisableParallelProcessing
+[2023-06-05 09:25:21] [build-stderr] Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] System.AggregateException: One or more errors occurred. (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) ---> System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout]    --- End of inner exception stack trace ---
+[2023-06-05 09:25:21] [build-stdout]   at NuGet.CommandLine.Program.Initialize (NuGet.IFileSystem fileSystem, NuGet.CommandLine.IConsole console) [0x000e4] in <d1ed15ee85c14e6c83a60d66f4b60532>:0 
+[2023-06-05 09:25:21] [build-stdout]   at NuGet.CommandLine.Program.MainCore (System.String workingDirectory, System.String[] args) [0x000de] in <d1ed15ee85c14e6c83a60d66f4b60532>:0 
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #0) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #1) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #2) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #3) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #4) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] ---> (Inner Exception #5) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:21] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:21] [build-stdout] Exit code 1
+[2023-06-05 09:25:21] [build-stdout] Attempting to download nuget.exe
+[2023-06-05 09:25:23] [build-stdout] Successfully downloaded /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/.nuget/nuget.exe
+[2023-06-05 09:25:23] [build-stdout] Running mono /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/.nuget/nuget.exe restore /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj -DisableParallelProcessing
+[2023-06-05 09:25:24] [build-stderr] Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] System.AggregateException: One or more errors occurred. (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) (Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.) ---> System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout]    --- End of inner exception stack trace ---
+[2023-06-05 09:25:24] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout]   at NuGet.CommandLine.Program.Initialize (NuGet.IFileSystem fileSystem, NuGet.CommandLine.IConsole console) [0x000e4] in <d1ed15ee85c14e6c83a60d66f4b60532>:0 
+[2023-06-05 09:25:24] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout]   at NuGet.CommandLine.Program.MainCore (System.String workingDirectory, System.String[] args) [0x000de] in <d1ed15ee85c14e6c83a60d66f4b60532>:0 
+[2023-06-05 09:25:24] [build-stderr]   Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #0) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #1) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #2) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #3) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #4) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] ---> (Inner Exception #5) System.IO.FileNotFoundException: Could not load file or assembly 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.
+[2023-06-05 09:25:24] [build-stdout] File name: 'System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'<---
+[2023-06-05 09:25:24] [build-stdout] Exit code 1
+[2023-06-05 09:25:24] [build-stdout] Running msbuild /t:restore /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj
+[2023-06-05 09:25:24] [build-stdout] Exit code 1: An error occurred trying to start process 'msbuild' with working directory '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples'. No such file or directory
+[2023-06-05 09:25:24] [build-stdout] Running msbuild /mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples/SqlConnectionExamples.csproj /t:rebuild
+[2023-06-05 09:25:24] [build-stdout] Exit code 1: An error occurred trying to start process 'msbuild' with working directory '/mnt/c/Users/t-prgharat/source/repos/Benchmarks-For-RLC#/SqlConnectionExamples'. No such file or directory
+[2023-06-05 09:25:24] [build-stdout] Attempting to locate build script
+[2023-06-05 09:25:24] [build-stderr] Error: Could not auto-detect a suitable build method
+[2023-06-05 09:25:24] [ERROR] Spawned process exited abnormally (code 1; tried to run: [/mnt/c/Users/t-prgharat/linux-codeql-home/codeql/tools/linux64/preload_tracer, /mnt/c/Users/t-prgharat/linux-codeql-home/codeql/csharp/tools/autobuild.sh])

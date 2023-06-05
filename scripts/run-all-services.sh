@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOME=""
-CODEQL_REPO="$HOME/codeql-home/codeql-repo"
+CODEQL_REPO="$HOME/codeql-home/codeql-repo/"
 
 set -e
 
@@ -16,15 +16,15 @@ fi
 for app in "$@"
 do
 	echo "Inference"
-	./inference.sh $CODEQL_REPO $app
-	cat ../data/inferred-attributes/$app/inference-summary.csv
+	echo ""
+	./scripts/inference.sh $CODEQL_REPO $app
 	echo ""
 done
 
 for app in "$@"
 do
 	echo "RLC#"
-	./RLC-inferred-annotations.sh $CODEQL_REPO $app
-	cat ../data/results-rlc/$app/rlc-with-inference-summary.csv
+	echo ""
+	./scripts/RLC-inferred-annotations.sh $CODEQL_REPO $app
 	echo ""
 done

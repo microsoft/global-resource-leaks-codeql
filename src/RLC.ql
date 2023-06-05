@@ -67,6 +67,9 @@
     )
      or 
      exists(AssignableDefinition def, Member f | node.asExpr() = def.getSource().getAChildExpr*() and f = def.getTarget() and (isOwningField(f.(Field)) or isOwningProperty(f.(Property))))
+     or
+     // Call to a method with annotation "CreateMustCallFor"
+     node.asExpr() = any(Call call, Member f | hasCreateMustCallFor(call.getARuntimeTarget(), f) | call)
  }
  
  predicate subsetSink(DataFlow::Node node)
@@ -400,14 +403,14 @@ predicate getInterSourceAD(Callable c, Call call)
              c = call.getARuntimeTarget() and p = c.getParameter(i) and not p.isParams() 
              and arg = call.getArgument(i) 
              and not exists(TernaryOperation op | op.getAnOperand() = arg.getAChildExpr*())
-             and (isOwningParameter(p) or mayBeDisposed(p))
+             and isOwningParameter(p)
          )
          or
          // Handles case with varargs
          exists(Parameter p, Callable c, int arg_count, int ind | 
              c = call.getARuntimeTarget() and p = c.getParameter(ind) and p.isParams() 
              and arg_count = call.getNumberOfArguments() and arg_count >= ind 
-             and (isOwningParameter(p) or mayBeDisposed(p))
+             and isOwningParameter(p)
          )
  }
  
@@ -651,7 +654,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias)
     node.getEnclosingCallable() = alias.getEnclosingCallable()
     and
     (
-        exists(MethodCall call, Callable c, Parameter p, Expr arg |
+        exists(Call call, Callable c, Parameter p, Expr arg |
             c = call.getARuntimeTarget() and p = c.getParameter(_) and not p.isParams()
             and arg = call.getArgumentForParameter(p) 
             and alias.asExpr() = call and node.asExpr() = arg
@@ -659,7 +662,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias)
             and ((c.fromLibrary() and isMustCallAliasMethod(c)) or (not c.fromLibrary() and isMustCallAliasMethod(c) and isMustCallAliasParameter(p)))
         )
         or
-        exists(MethodCall call, Callable c, Parameter p, int i, int j, Expr arg |
+        exists(Call call, Callable c, Parameter p, int i, int j, Expr arg |
             c = call.getARuntimeTarget() and p = c.getParameter(i) and p.isParams()
             and arg = call.getAnArgument() and j = call.getNumberOfArguments() and j >= i
             and alias.asExpr() = call and node.asExpr() = arg
@@ -685,15 +688,24 @@ predicate checkAlias(DataFlow::Node node1, DataFlow::Node node2)
         or
         isResourceAlias(node1, node2)
         or
+        exists(MethodCall call, Callable c, Expr e | node1.asExpr() = call and c = call.getARuntimeTarget() 
+            and hasCreateMustCallFor(c, _) and e = call.getQualifier() and DataFlow::localFlow(DataFlow::exprNode(e), node2)
+        )
+        or
         exists(DataFlow::Node n | isAlias(node1, n) and checkAlias(n, node2))
     )
+}
+
+predicate isCMC(DataFlow::Node node)
+{
+    exists(Call call, Callable c | node.asExpr() = call and c = call.getARuntimeTarget() and hasCreateMustCallFor(c, _))
 }
  
 predicate isAlias(DataFlow::Node node1, DataFlow::Node node2)
 {
     node1.getEnclosingCallable() = node2.getEnclosingCallable() and
+    not (node1.asExpr() = node2.asExpr() and isCMC(node1)) and
     (isSource(node1) or exists(Parameter p | node1.asParameter() = p and isMustCallAliasParameter(p)))
-    and isSink(node2) // Need to check this
     and checkAlias(node1, node2)
 }
  
@@ -803,7 +815,9 @@ predicate checkForResourceType(RefType type)
  
  predicate belongToSameStmt(DataFlow::Node src, DataFlow::Node sink)
  {
-     exists(Expr e1, Expr e2 | e1 = src.asExpr() and e2 = sink.asExpr() and e1.getEnclosingStmt() = e2.getEnclosingStmt())
+     exists(Expr e1, Expr e2 | e1 = src.asExpr() and e2 = sink.asExpr() and e1.getEnclosingStmt() = e2.getEnclosingStmt() and 
+        not (e1 = e2 and isCMC(src))
+    )
  }
  
  predicate checkDataFlow(DataFlow::Node src, DataFlow::Node sink)
@@ -869,8 +883,13 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          )
      or
      exists(Expr exp, DataFlow::Node src | exp = e and src = DataFlow::exprNode(exp) and 
-         checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
-         isSource(src) and not suppressAlertsWithAnnotationsE(exp) 
+         not isInMockOrTestFile(src) and
+         if isCMC(src) 
+         then
+             checkForResourceType(src.getEnclosingCallable().getDeclaringType())
+         else
+             checkForResourceType(src.getType()) 
+         and isSource(src) and not suppressAlertsWithAnnotationsE(exp) 
          and reachableWithoutDisposal(src, src.getEnclosingCallable().getExitPoint())
          | 
             if src.getType().fromLibrary()
@@ -881,9 +900,10 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
         )
      or
      exists(Expr exp, DataFlow::Node src, Field f | exp = e and src = DataFlow::exprNode(exp) 
-         and not isOwningField(f) and f.getInitializer() = exp and
-         checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
-         isSource(src) and not suppressAlertsWithAnnotationsE(exp)
+         and not isOwningField(f) and f.getInitializer() = exp
+         and not isInMockOrTestFile(src)
+         and checkForResourceType(src.getType())
+         and isSource(src) and not suppressAlertsWithAnnotationsE(exp)
          |
          if f.isReadOnly() then
             if f.getType().fromLibrary()
