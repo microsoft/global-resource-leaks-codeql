@@ -28,7 +28,7 @@ namespace SqlConnectionExamples
         public static SqlConnection GetSqlConnection()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.ConnectionString = "Server=tcp:cloud-reliability.database.windows.net,1433;Initial Catalog=leaks;Persist Security Info=False;User ID=resourceleaks;Password=ResourceLe@ks;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=300;";
+            builder.ConnectionString = "Server=tcp:database.windows.net,1433;Initial Catalog=leaks;Persist Security Info=False;User ID=resourceleaks;Password=ResourceLe@ks;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=300;";
             var sqlconnection = new SqlConnection(builder.ConnectionString);
 
             return sqlconnection;
