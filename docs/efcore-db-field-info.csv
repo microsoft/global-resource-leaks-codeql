@@ -1,0 +1,5 @@
+or (filename = "Microsoft.EntityFrameworkCore.ValueGeneration/HiLoValueGeneratorState.cs" and lineNumber = "16" and programElementType = "Field" and programElementName = "HiLoValueGeneratorState._semaphoreSlim" and type = "OnlyRead")
+or (filename = "Microsoft.EntityFrameworkCore.Storage/RelationalConnection.cs" and lineNumber = "142" and programElementType = "Property" and programElementName = "RelationalConnection.DbConnection" and type = "NonReadOnly")
+or (filename = "Microsoft.Data.Sqlite/SqliteCommand.cs" and lineNumber = "30" and programElementType = "Field" and programElementName = "SqliteCommand._preparedStatements" and type = "OnlyRead")
+or (filename = "Microsoft.Data.Sqlite/SqliteConnectionPool.cs" and lineNumber = "23" and programElementType = "Field" and programElementName = "SqliteConnectionPool._pruneTimer" and type = "NonReadOnly")
+or (filename = "Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal/CosmosClientWrapper.cs" and lineNumber = "729" and programElementType = "Field" and programElementName = "Enumerator._responseMessage" and type = "NonReadOnly")

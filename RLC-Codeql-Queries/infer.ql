@@ -163,12 +163,6 @@ predicate isOwningOnParam(Callable c, Parameter p)
         and c = fr.getEnclosingCallable() and isReturnExpr(c, e)
         and checkAlias(DataFlow::exprNode(fr), DataFlow::exprNode(e))
     )
-    or
-    exists(| c instanceof Constructor and c.fromSource() and checkForResourceType(c.getDeclaringType())
-            and c.getNumberOfParameters() = 0 
-            and not exists(FieldWrite fw | c = fw.getEnclosingCallable() and checkForResourceType(fw.getTarget().getType()))
-            and not exists(PropertyWrite fw | c = fw.getEnclosingCallable() and checkForResourceType(fw.getTarget().getType()))
-    )
  }
  
  predicate hasMustCallAlias(Callable c, Parameter p)
@@ -366,7 +360,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias) {
  predicate hasEnsuresCalledMethods(Method c, Member p, Method m) {
     exists(MethodCall mc , FieldRead fr, Field f | f = p and
         fr.getEnclosingCallable() = c and checkForResourceType(f.getType()) and
-        DataFlow::localFlow(DataFlow::exprNode(fr), DataFlow::exprNode(mc.getQualifier().getAChildExpr*())) and m = mc.getARuntimeTarget() and
+        fr = mc.getQualifier().getAChildExpr*() and m = mc.getARuntimeTarget() and
         fr.getTarget() = f and sinkFor(c, DataFlow::exprNode(mc.getQualifier()))
         // isInMustCall(f.getType(), m)
         and not exists(AssignableDefinition def | c = def.getEnclosingCallable() and def.getTarget() = f and def.getSource().reachableFrom(fr) and not def.getSource() instanceof NullLiteral)
@@ -377,7 +371,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias) {
     or
     exists(MethodCall mc , PropertyRead fr, Property f | f = p and 
         fr.getEnclosingCallable() = c and checkForResourceType(f.getType()) and
-        DataFlow::localFlow(DataFlow::exprNode(fr), DataFlow::exprNode(mc.getQualifier().getAChildExpr*())) and m = mc.getARuntimeTarget() and
+        fr = mc.getQualifier().getAChildExpr*() and m = mc.getARuntimeTarget() and
         fr.getTarget() = f and sinkFor(c, DataFlow::exprNode(mc.getQualifier()))
         // isInMustCall(f.getType(), m)
         and not exists(AssignableDefinition def | c = def.getEnclosingCallable() and def.getTarget() = f and def.getSource().reachableFrom(fr) and not def.getSource() instanceof NullLiteral)
@@ -530,6 +524,7 @@ predicate readAnnotation(string filename, string lineNumber, string programEleme
     or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "StreamWriter" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "BinaryWriter" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "1_Socket" and programElementType = "Method" and programElementName = "NetworkStream" and annotation = "MustCallAlias")
+    or (filename = "Library" and lineNumber = "2_SqlConnection" and programElementType = "Method" and programElementName = "SqlCommand" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "0_SqlCommand" and programElementType = "Method" and programElementName = "ExecuteReader" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "Task" and annotation = "MustCall")
     or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "StringReader" and annotation = "MustCall")
@@ -610,18 +605,11 @@ predicate readAnnotation(string filename, string lineNumber, string programEleme
     or (filename = "Library" and lineNumber = "1_Stream" and programElementType = "Method" and programElementName = "InputStreamWrapper" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "1_TextReader" and programElementType = "Method" and programElementName = "JsonTextReader" and annotation = "MustCallAlias")
     or (filename = "Library" and lineNumber = "0_DbCommand" and programElementType = "Parameter" and programElementName = "this" and annotation = "Owning")
-    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<BuildHttpClient>" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<GitHttpClient>" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<TestResultsHttpClient>" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0_VssConnection" and programElementType = "Method" and programElementName = "GetClient<TestResultsHttpClient>" and annotation = "NonOwning")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "BuildTrackerService" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "SemaphoreSlim" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "ManualResetEventSlim" and annotation = "MustCall")
-    or (filename = "Library" and lineNumber = "0" and programElementType = "Class" and programElementName = "EventSource" and annotation = "MustCall")
 }
+
 
 from Element e, string str
 where   not isInMockOrTestFile(e) and // Ignore the test code
         str = inferAnnotations(e) and str != ""
-        // and e.getLocation().getFile().getBaseName().regexpMatch("AgentClient.cs")
+        // and e.getLocation().getFile().getBaseName().regexpMatch("")
 select e, str

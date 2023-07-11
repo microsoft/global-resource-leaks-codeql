@@ -59,17 +59,12 @@
      exists(Call call, Member f | checkEncapsulationMethodHasCreateMustCallForAnnotation(call, f) and call.(MethodCall).getQualifier() = node.asExpr())
      or
      // Return statement whose type is ResourceType
-     exists(Expr e, Callable c | e = node.asExpr() and c = e.getEnclosingCallable() and isReturnExpr(c, e) and checkForResourceType(e.getType())) // and isOwningMethod(c))
+     exists(Expr e, Callable c | e = node.asExpr() and c = e.getEnclosingCallable() and isReturnExpr(c, e) and isOwningMethod(c))
      or
      // Things that are added to a collection of some kind are likely to escape the scope
-     exists(MethodCall mc | mc.getAnArgument() = node.asExpr() | mc.getTarget().getName().regexpMatch("Add.*") and 
-        (mc.getQualifier().getType() instanceof CollectionType or mc.getType() instanceof CollectionType)
-    )
+     exists(MethodCall mc | mc.getAnArgument() = node.asExpr() | mc.getTarget().hasName("Add"))
      or 
      exists(AssignableDefinition def, Member f | node.asExpr() = def.getSource().getAChildExpr*() and f = def.getTarget() and (isOwningField(f.(Field)) or isOwningProperty(f.(Property))))
-     or
-     // Call to a method with annotation "CreateMustCallFor"
-     node.asExpr() = any(Call call, Member f | hasCreateMustCallFor(call.getARuntimeTarget(), f) | call)
  }
  
  predicate subsetSink(DataFlow::Node node)
@@ -125,18 +120,14 @@ predicate checkCorrectnessOfECM(Callable c, Callable m, Member p)
         and call.getEnclosingCallable() = c and call.getARuntimeTarget().getName() = m.getName()
         and exp1 = p.getAnAccess() and (exp2 = call.getQualifier().getAChildExpr*() or exp2 = call.getAnArgument())
         // and exp1.getAChildExpr*()  = exp2.getAChildExpr*())
-        // and exp1 = exp2
-        and DataFlow::localFlow(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2))
-    )
+        and exp1 = exp2)
         // and isAlias(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2)))
     or
     exists(MethodCall call, Expr exp1, Expr exp2, Property f | f = p and isOwningProperty(f) 
         and call.getEnclosingCallable() = c and call.getARuntimeTarget().getName() = m.getName()
         and exp1 = p.getAnAccess() and (exp2 = call.getQualifier().getAChildExpr*() or exp2 = call.getAnArgument())
         // and exp1.getAChildExpr*()  = exp2.getAChildExpr*())
-        // and exp1 = exp2
-        and DataFlow::localFlow(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2))
-    )
+        and exp1 = exp2)
         // and isAlias(DataFlow::exprNode(exp1), DataFlow::exprNode(exp2)))
 }
  
@@ -403,14 +394,14 @@ predicate getInterSourceAD(Callable c, Call call)
              c = call.getARuntimeTarget() and p = c.getParameter(i) and not p.isParams() 
              and arg = call.getArgument(i) 
              and not exists(TernaryOperation op | op.getAnOperand() = arg.getAChildExpr*())
-             and isOwningParameter(p)
+             and (isOwningParameter(p) or mayBeDisposed(p))
          )
          or
          // Handles case with varargs
          exists(Parameter p, Callable c, int arg_count, int ind | 
              c = call.getARuntimeTarget() and p = c.getParameter(ind) and p.isParams() 
              and arg_count = call.getNumberOfArguments() and arg_count >= ind 
-             and isOwningParameter(p)
+             and (isOwningParameter(p) or mayBeDisposed(p))
          )
  }
  
@@ -654,7 +645,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias)
     node.getEnclosingCallable() = alias.getEnclosingCallable()
     and
     (
-        exists(Call call, Callable c, Parameter p, Expr arg |
+        exists(MethodCall call, Callable c, Parameter p, Expr arg |
             c = call.getARuntimeTarget() and p = c.getParameter(_) and not p.isParams()
             and arg = call.getArgumentForParameter(p) 
             and alias.asExpr() = call and node.asExpr() = arg
@@ -662,7 +653,7 @@ predicate isResourceAlias(DataFlow::Node node, DataFlow::Node alias)
             and ((c.fromLibrary() and isMustCallAliasMethod(c)) or (not c.fromLibrary() and isMustCallAliasMethod(c) and isMustCallAliasParameter(p)))
         )
         or
-        exists(Call call, Callable c, Parameter p, int i, int j, Expr arg |
+        exists(MethodCall call, Callable c, Parameter p, int i, int j, Expr arg |
             c = call.getARuntimeTarget() and p = c.getParameter(i) and p.isParams()
             and arg = call.getAnArgument() and j = call.getNumberOfArguments() and j >= i
             and alias.asExpr() = call and node.asExpr() = arg
@@ -688,24 +679,15 @@ predicate checkAlias(DataFlow::Node node1, DataFlow::Node node2)
         or
         isResourceAlias(node1, node2)
         or
-        exists(MethodCall call, Callable c, Expr e | node1.asExpr() = call and c = call.getARuntimeTarget() 
-            and hasCreateMustCallFor(c, _) and e = call.getQualifier() and DataFlow::localFlow(DataFlow::exprNode(e), node2)
-        )
-        or
         exists(DataFlow::Node n | isAlias(node1, n) and checkAlias(n, node2))
     )
-}
-
-predicate isCMC(DataFlow::Node node)
-{
-    exists(Call call, Callable c | node.asExpr() = call and c = call.getARuntimeTarget() and hasCreateMustCallFor(c, _))
 }
  
 predicate isAlias(DataFlow::Node node1, DataFlow::Node node2)
 {
     node1.getEnclosingCallable() = node2.getEnclosingCallable() and
-    not (node1.asExpr() = node2.asExpr() and isCMC(node1)) and
     (isSource(node1) or exists(Parameter p | node1.asParameter() = p and isMustCallAliasParameter(p)))
+    and isSink(node2) // Need to check this
     and checkAlias(node1, node2)
 }
  
@@ -815,9 +797,7 @@ predicate checkForResourceType(RefType type)
  
  predicate belongToSameStmt(DataFlow::Node src, DataFlow::Node sink)
  {
-     exists(Expr e1, Expr e2 | e1 = src.asExpr() and e2 = sink.asExpr() and e1.getEnclosingStmt() = e2.getEnclosingStmt() and 
-        not (e1 = e2 and isCMC(src))
-    )
+     exists(Expr e1, Expr e2 | e1 = src.asExpr() and e2 = sink.asExpr() and e1.getEnclosingStmt() = e2.getEnclosingStmt())
  }
  
  predicate checkDataFlow(DataFlow::Node src, DataFlow::Node sink)
@@ -883,13 +863,8 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
          )
      or
      exists(Expr exp, DataFlow::Node src | exp = e and src = DataFlow::exprNode(exp) and 
-         not isInMockOrTestFile(src) and
-         if isCMC(src) 
-         then
-             checkForResourceType(src.getEnclosingCallable().getDeclaringType())
-         else
-             checkForResourceType(src.getType()) 
-         and isSource(src) and not suppressAlertsWithAnnotationsE(exp) 
+         checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
+         isSource(src) and not suppressAlertsWithAnnotationsE(exp) 
          and reachableWithoutDisposal(src, src.getEnclosingCallable().getExitPoint())
          | 
             if src.getType().fromLibrary()
@@ -900,10 +875,9 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
         )
      or
      exists(Expr exp, DataFlow::Node src, Field f | exp = e and src = DataFlow::exprNode(exp) 
-         and not isOwningField(f) and f.getInitializer() = exp
-         and not isInMockOrTestFile(src)
-         and checkForResourceType(src.getType())
-         and isSource(src) and not suppressAlertsWithAnnotationsE(exp)
+         and not isOwningField(f) and f.getInitializer() = exp and
+         checkForResourceType(src.getType()) and not isInMockOrTestFile(src) and
+         isSource(src) and not suppressAlertsWithAnnotationsE(exp)
          |
          if f.isReadOnly() then
             if f.getType().fromLibrary()
@@ -1051,13 +1025,18 @@ predicate reachableWithoutDisposal(DataFlow::Node src, ControlFlow::Node nd)
  // file.csv has annotations that are added manually to the file. 
  // Each row contains comma-separated 5 columns which forms the arguments of the external predicate readAnnotation.
  
-//  predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
-//  {
-//  }
-  
+// predicate readAnnotation(string filename, string lineNumber, string programElementType, string programElementName, string annotation)
+// {
+// }
+ 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 from Element e, string str
 where  str = mayNotBeDisposedAlt(e) // actual analysis
+       // and not suppressAlerts(src) 
         // and filterFileWise(e, "")
 select e, str
+
+// from DataFlow::Node src
+// where   isSource(src) and not isInMockOrTestFile(src) and checkForResourceType(src.getType())
+// select src
