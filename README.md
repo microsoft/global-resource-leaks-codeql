@@ -2,9 +2,7 @@
 
 This README.md file provides information about the artifact for "Inference of Resource Management Specifications." The artifact includes the implementation of our inference algorithm for both the Java and C# languages. It is provided with two separate Docker containers to facilitate easy reproduction. Each container contains the respective implementations and the case study programs used in the experiments described in Section 5 of the revise version of the paper which is uploaded in the artifact.
 
-This docker container is for C#. 
-
-To access the artifact, you can find it on Zenodo TODO. To get started, please follow the instructions below: 
+This docker container is for C#. To get started, please follow the instructions below.
 
 # Evaluation of Inference and Resource Leak Checker for C# Code
 
@@ -27,8 +25,9 @@ These files are also available on [Github](https://github.com/microsoft/global-r
 ## Setup
 
   1. Install Docker based on your system configuration: [Get Docker](https://docs.docker.com/get-docker/).
-  2. Import the artifact into Docker: `docker load --input oopsla-artifact-csharp-471.tar`
-  3. Run the Docker image: `docker run -it --user oopsla oopsla-artifact-csharp-471 /bin/bash`
+  2. Unzip the provided Docker image. `gunzip -c path/to/resource_leak_inference.tar.gz > resource_leak_inference.tar`
+  3. Import the artifact into Docker: `docker load --input oopsla-artifact-csharp-471.tar`
+  4. Run the Docker image: `docker run -it --user oopsla oopsla-artifact-csharp-471 /bin/bash`
 
 This command will log you into a bash shell inside the Docker container as the oopsla user, with the current working directory set to /home/oopsla. All the relevant code and scripts are located within this directory.
 
@@ -42,7 +41,7 @@ We have developed both Inference and RLC# as CodeQL queries.
 For the evaluation of Inference and RLC#, we utilize two open-source projects: [Lucene.Net](https://github.com/apache/lucenenet) and [EF Core](https://github.com/dotnet/efcore). This artifact does not include proprietary C# microservices, which are discussed in the paper.
 
 
-CodeQL experiments begin with the generation of a CodeQL database. 
+CodeQL experiments begin with the generation of a CodeQL database. It is important to note that cloning the repositories for the two opens-source benchmarks and their CodeQL databases requires a significant amount of disk space, estimated at 30 GB. Make sure you have sufficient storage capacity on your system before proceeding with the CodeQL database creation process to avoid any issues related to disk space constraints.
 
 ## CodeQL Database Creation
 
