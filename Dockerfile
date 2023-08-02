@@ -72,6 +72,18 @@ RUN cp -R global-resource-leaks-codeql/RLC-Codeql-Queries /home/oopsla/codeql-re
 RUN sudo chown -R oopsla:oopsla scripts && chmod -R +x scripts/* 
 RUN sudo chown -R oopsla:oopsla /home/oopsla/codeql-repo/csharp/ql/src/RLC-Codeql-Queries && chmod -R +x /home/oopsla/codeql-repo/csharp/ql/src/RLC-Codeql-Queries/* 
 
+RUN mkdir /home/oopsla/csharp-open-source-projects && \
+    mkdir /home/oopsla/csharp-open-source-projects/codeql-databases && \
+    cd /home/oopsla/csharp-open-source-projects && \
+    git clone https://github.com/apache/lucenenet.git && \
+    cd lucenenet && \
+    git checkout b5ea527c5bd125dd1db34d8b914e1a5d72e08ffa && \
+    cd /home/oopsla/csharp-open-source-projects && \
+    git clone https://github.com/dotnet/efcore.git && \
+    cd efcore && \
+    git checkout df614b8c6b1dcc1caabe707ef8c887111392cdaa && \
+    cd /home/oopsla
+
 ##RUN mkdir scripts 
 ##COPY scripts scripts
 ##RUN sudo chown -R oopsla:oopsla scripts && chmod -R +x scripts/* 

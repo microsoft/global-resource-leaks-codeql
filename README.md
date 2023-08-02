@@ -43,6 +43,8 @@ For the evaluation of Inference and RLC#, we utilize two open-source projects: [
 
 CodeQL experiments begin with the generation of a CodeQL database. It is important to note that cloning the repositories for the two opens-source benchmarks and their CodeQL databases requires a significant amount of disk space, estimated at 30 GB. Make sure you have sufficient storage capacity on your system before proceeding with the CodeQL database creation process to avoid any issues related to disk space constraints.
 
+To perform Kick-the-tires for C# experiments, it is sufficient to create the CodeQL database using the command `python3 scripts/createCodeQLDB.py` and reproduce the first table using the command `python3 scripts/csharp-table1.py`. These steps are explained below.
+
 ## CodeQL Database Creation
 
 A CodeQL database is a relational database that is created by extracting code information from the source code of the target project, allowing CodeQL to perform in-depth analysis and identify potential security vulnerabilities or issues. Once the CodeQL database is generated, it can be queried using CodeQL queries to uncover insights and perform various analyses on the codebase.
