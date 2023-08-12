@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Shadab"
+  given-names: "Narges"
+- family-names: "Gharat"
+  given-names: "Pritam"
+- family-names: "Tiwari"
+  given-names: "Shrey"
+- family-names: "Ernst"
+  given-names: "Michael"
+- family-names: "Kellogg"
+  given-names: "Martin"
+- family-names: "Lahiri"
+  given-names: "Shuvendu"
+- family-names: "Lal"
+  given-names: "Akash"
+- family-names: "Sridharan"
+  given-names: "Manu"
+title: "Inference of Resource Management Specifications"
+version: 2.0.4
+doi: 10.5281/zenodo.8149274 
+date-released: 2023-07-15
+url: "https://github.com/microsoft/global-resource-leaks-codeql"
